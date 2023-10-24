@@ -34,6 +34,5 @@ Input args to `calculate_fractions_SSIM`:
 | C_mu | float, optional | Additive constant to ensure score behaves well for all zeros. Defaults to 1e-16.
 | C_sigma | float, optional| Additive constant to ensure score behaves well for all zeros. Defaults to 1e-16.
 
-Returns:
-    float: fssim score, useful threshold
+Returns: (fssim score, useful threshold)
     
