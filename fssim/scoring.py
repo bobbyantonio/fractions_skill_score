@@ -1,4 +1,4 @@
-import random
+import copy
 import numpy as np
 from scipy.ndimage import uniform_filter
 from scipy.stats import pearsonr
@@ -132,3 +132,51 @@ def calculate_fractions_SSIM(X_o: np.ndarray, X_f: np.ndarray,
     fssim_score = rho_term*mu_term*sigma_term
     
     return fssim_score, useful_threshold
+
+def calculate_correlation(truth_array, fcst_array, window_range, threshold=0.01):
+    (height, width) = truth_array.shape
+
+    corr_t_f = {f't_fn_{orientation}': {} for orientation in ['row', 'col']}
+    corr_t_f.update({f'f_tn_{orientation}': {} for orientation in ['row', 'col']})
+    corr_t_f.update({f't_tn_{orientation}': {} for orientation in ['row', 'col']})
+    corr_t_f.update({f'f_fn_{orientation}': {} for orientation in ['row', 'col']})
+
+    p_t_f = copy.deepcopy(corr_t_f )
+    
+    truth_integer_array = (truth_array >= threshold).astype(np.single)
+    fcst_integer_array = (fcst_array >= threshold).astype(np.single)
+
+
+    for n in window_range:
+
+        t0 = {'row': [], 'col': []}
+        tn = {'row': [], 'col': []}
+        f0 = {'row': [], 'col': []}
+        fn = {'row': [], 'col': []}
+        
+        for w in np.arange(0, width-n):
+
+            t0['col'] += list(truth_integer_array[ :, w].flatten())
+            tn['col'] += list(truth_integer_array[ :, w+n].flatten())
+            
+            f0['col'] += list(fcst_integer_array[:,w].flatten())
+            fn['col'] += list(fcst_integer_array[:,w+n].flatten())
+            
+        for h in np.arange(0, height-n):
+            
+            t0['row'] += list(truth_integer_array[ h, :].flatten())
+            tn['row'] += list(truth_integer_array[ h+n, :].flatten())
+            
+            f0['row'] += list(fcst_integer_array[h, :].flatten())
+            fn['row'] += list(fcst_integer_array[h+ n, :].flatten())
+            
+        for orientation in ['row', 'col']:
+            corr_t_f[f't_tn_{orientation}'][n] = pearsonr(t0[orientation], tn[orientation]).statistic
+            corr_t_f[f'f_fn_{orientation}'][n] = pearsonr(f0[orientation], fn[orientation]).statistic
+            corr_t_f[f't_fn_{orientation}'][n] = pearsonr(t0[orientation], fn[orientation]).statistic
+            corr_t_f[f'f_tn_{orientation}'][n] = pearsonr(f0[orientation], tn[orientation]).statistic
+            p_t_f[f't_fn_{orientation}'][n]= pearsonr(t0[orientation], fn[orientation]).pvalue
+            p_t_f[f'f_tn_{orientation}'][n]= pearsonr(f0[orientation], tn[orientation]).pvalue
+            p_t_f[f't_tn_{orientation}'][n]= pearsonr(t0[orientation], tn[orientation]).pvalue
+            p_t_f[f'f_fn_{orientation}'][n]= pearsonr(f0[orientation], fn[orientation]).pvalue
+    return corr_t_f, p_t_f
