@@ -1,0 +1,11 @@
+name: fss
+channels:
+  - defaults
+dependencies:
+  - numpy
+  - scipy
+  - matplotlib
+  - cartopy
+  - jupyter
+  - ipykernel
+  
