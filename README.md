@@ -23,7 +23,6 @@ fss_random_score = fss_random(X_o=obs_array, thr=95, threshold_type='percentile'
 ```
 
 
-
 # Producing plots
 
 The plots are produced by running the notebook in notebooks/fss_plots.ipynb
