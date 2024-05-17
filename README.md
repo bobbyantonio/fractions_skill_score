@@ -1,4 +1,4 @@
-# FSS-useful-criteria
+# fractions_skill_score
 Python code to accompany paper `How to derive skill from the Fractions Skill Score'
 
 # Installation
