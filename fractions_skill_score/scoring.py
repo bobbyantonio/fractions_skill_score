@@ -102,9 +102,7 @@ def get_summary_stats(X_o: np.ndarray, X_f: np.ndarray,
 
     S_o = get_convolved_fractions(X_o, threshold=obs_threshold, scale=scale, mode=mode)
     
-    S_f = np.empty(X_f.shape)
-    for ii in range(X_f.shape[-1]):
-        S_f[...,ii] = get_convolved_fractions(X_f[...,ii], threshold=forecast_threshold, scale=scale, mode=mode)
+    S_f = get_convolved_fractions(X_f, threshold=forecast_threshold, scale=scale, mode=mode)
         
     mu_f = S_f.mean()
     sigma_f = S_f.std()
